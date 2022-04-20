@@ -1,0 +1,389 @@
+---
+title: "Target Markdown"
+output: html_document
+---
+
+# About
+
+To implement the customer churn prediction analysis, we will create a `targets` pipeline. A pipeline is a high-level collection of steps, or *targets*, that comprise the workflow. Each *target* has a *command*, which is just a piece of R code that returns a value. In practice, targets are usually data cleaning, model fitting, and results summary steps, and the commands are just the R function calls that do those tasks. Please read the instructions in the comments.
+
+# Setup
+
+```{r}
+library(targets)
+tar_destroy() # Start fresh.
+```
+
+# Functions
+
+The commands of your targets will depend on the functions from `1-functions.Rmd`. For the exercises below, they are in `2-pipelines/functions.R`. Take a quick glance at `2-pipelines/functions.R` and re-familiarize yourself with the code base. 
+
+# Start with a small pipeline.
+
+The first version of the pipeline consists of three *targets*, or steps of computation. Our first targets do the following:
+
+1. Reproducibly track the customer churn CSV data file.
+2. Read in the data from the CSV file.
+3. Preprocess the data for the deep learning models.
+
+The steps above translate to the following R code.
+
+```{r, eval = FALSE}
+# No need to run this code chunk.
+library(keras)
+library(recipes)
+library(rsample)
+library(tidyverse)
+library(yardstick)
+source("2-pipelines/functions.R")
+churn_file <- "data/churn.csv"             # Sketch of target 1.
+churn_data <- split_data(churn_file)       # Sketch of target 2.
+churn_recipe <- prepare_recipe(churn_data) # Sketch of target 3.
+```
+
+To formalize our three targets, we express the computation in a special configuration file called `_targets.R` at the project's root directory. The role of `_targets.R` is to
+
+1. Load any functions and global objects that the targets depend on.
+2. Set any options, including packages that the targets depend on.
+3. Declare a list of targets using `tar_target()`. The `_targets.R` script must always end with a list of target objects.
+
+Run the following code chunk to put the `_targets.R` file for this chapter in your working directory.
+
+```{r, echo = FALSE}
+file.copy("2-pipelines/initial_targets.R", "_targets.R", overwrite = TRUE)
+```
+
+Now, open `_targets.R` in the RStudio IDE for editing. You will manually make changes to `_targets.R` throughout the entire chapter.
+
+```{r}
+library(targets)
+tar_edit()
+```
+
+Functions `tar_make()`, `tar_validate()`, `tar_manifest()`, `tar_glimpse()`, and `tar_visnetwork()` all need `_targets.R`. `_targets.R` lets these functions invoke the pipeline from a new external R process in order to ensure reproducibility.
+
+```{r}
+tar_validate() # Looks for errors.
+```
+
+```{r}
+tar_manifest(fields = "command") # Data frame of target info.
+```
+
+```{r}
+tar_glimpse() # Interactive dependency graph.
+```
+
+# Dependency relationships
+
+`tar_glimpse()` is particularly helpful because it shows how the targets depend on one another. As the arrows indicate, target `churn_recipe` depends on `churn_data`, and target `churn_data` depends on `churn_file`. The `targets` package detects these relationships automatically using static code analysis. `churn_data` depends on `churn_file` because the command for `churn_data` mentions the symbol `churn_file`. You can see these dependency relationships for yourself using `codetools::findGlobals()`.
+
+```{r}
+library(codetools)
+findGlobals(function() split_data(churn_file))
+```
+
+That means the order you write your targets does not matter. Even if you rearrange the calls to `tar_target()` inside the list, you will still get the same workflow.
+
+`tar_visnetwork()` also includes functions in the dependency graph, as well as color-coded status information.
+
+```{r}
+tar_visnetwork()
+```
+
+# Run the pipeline.
+
+Everything we did so far was just setup. To actually run the pipeline, use the `tar_make()` function. `tar_make()` creates a fresh new reproducible R process that runs `_targets.R` and executes the correct targets in the correct order (from the dependency graph, not the order in the target list).
+
+```{r}
+tar_make()
+```
+
+# Inspect the results
+
+Targets `churn_data` and `churn_recipe` now live in a special `_targets/` data store.
+
+```{r}
+list.files("_targets/objects")
+```
+`churn_file` is an [external input file](https://books.ropensci.org/targets/files.html#external-input-files), declared with `format = "file"` in `tar_target()`, so its value is not in the data store. However, the actual file path, hash, and other metadata are stored in the `_targets/meta/meta` spreadsheet, which you can read with `tar_meta()`.
+
+```{r}
+library(dplyr)
+tar_meta(names = starts_with("churn"), fields = path) %>%
+  mutate(path = unlist(path))
+```
+
+Other user-side functions read the actual data objects.
+
+```{r}
+tar_read(churn_data)
+```
+
+
+```{r}
+tar_read(churn_recipe)
+```
+
+```{r}
+tar_load(churn_file)
+churn_file
+```
+
+# Build up the pipeline.
+
+After inspecting our current targets with `tar_load()` and `tar_read()`, we are ready to add new targets to fit our models. Informally, the new computations look like this:
+
+```{r, eval = FALSE}
+run_relu <- test_model(act1 = "relu", churn_data, churn_recipe)       # Model 1
+run_sigmoid <- test_model(act1 = "sigmoid", churn_data, churn_recipe) # Model 2
+```
+
+Your turn: open `_targets.R` for editing.
+
+```{r}
+tar_edit()
+```
+
+Then, express the model commands above as formal targets in the pipeline.
+
+```{r, eval = FALSE}
+# Should go in _targets.R:
+library(targets)
+source("2-pipelines/functions.R")
+tar_option_set(packages = c("keras", "recipes", "rsample", "tidyverse", "yardstick"))
+list(
+  tar_target(churn_file, "data/churn.csv", format = "file"),
+  tar_target(churn_data, split_data(churn_file)),
+  tar_target(churn_recipe, prepare_recipe(churn_data)),
+  tar_target("???", "???"), # Your turn: add model 1.
+  tar_target("???", "???")  # Your turn: add model 2.
+)
+```
+
+Visualize the graph to check the pipeline. `run_relu` and `run_sigmoid` should be new targets that depend on `churn_data`, `churn_recipe`, `test_model()`, and the custom functions called from `test_model()`.
+
+```{r}
+tar_visnetwork()
+```
+
+`churn_file`, `churn_data` and `churn_recipe` are up to date from last time, and `run_relu` and `run_sigmoid` are new and thus outdated.
+
+```{r}
+tar_outdated()
+```
+
+`tar_make()` automatically runs the new or outdated targets (in this case, the models) and skips the targets that are already up to date.
+
+```{r, output = FALSE}
+tar_make() # Ignore messages like "TensorFlow binary was not compiled to use..."
+```
+
+Those models took a long time to run, right? That is why `tar_make()` skips them if they are up to date.
+
+```{r}
+tar_make()
+```
+
+If you are not sure what will run, just call `tar_visnetwork()` or `tar_outdated()` first.
+
+```{r}
+tar_outdated()
+```
+
+# Check the model targets
+
+`run_relu` and `run_sigmoid` should each be a data frame with the accuracy and hyperparameters.
+
+```{r, paged.print = FALSE}
+tar_read(run_relu)
+```
+
+```{r, paged.print = FALSE}
+tar_read(run_sigmoid)
+```
+
+# Add another model
+
+Your turn: open `_targets.R` for editing and type in a third model with a different activation function. Use the `act1 = "softmax"` this time.
+
+```{r}
+tar_edit()
+```
+
+```{r, eval = FALSE}
+# Should go in _targets.R:
+library(targets)
+source("2-pipelines/functions.R")
+tar_option_set(packages = c("keras", "recipes", "rsample", "tidyverse", "yardstick"))
+list(
+  tar_target(churn_file, "data/churn.csv", format = "file"), 
+  tar_target(churn_data, split_data(churn_file)),
+  tar_target(churn_recipe,  prepare_recipe(churn_data)),
+  tar_target(run_relu, test_model(act1 = "relu", churn_data, churn_recipe)),
+  tar_target(run_sigmoid, test_model(act1 = "sigmoid", churn_data, churn_recipe)),
+  tar_target(run_softmax, "???") # Your turn: add a model target with `act1 = "softmax"`.
+)
+```
+
+Now, only `run_softmax` should be outdated.
+
+```{r}
+tar_outdated()
+```
+
+```{r}
+tar_visnetwork()
+```
+
+Run the softmax model. `tar_make()` should skip everything else.
+
+```{r}
+tar_make()
+```
+Inspect the result.
+
+```{r, paged.print = FALSE}
+tar_read(run_softmax)
+```
+
+# Pick the best model.
+
+The following R code chooses the model run with the highest accuracy.
+
+```{r, eval = FALSE}
+# Do not run here.
+bind_rows(run_relu, run_sigmoid, run_softmax) %>%
+  top_n(1, accuracy) %>%
+  head(1)
+```
+
+Your turn: open `_targets.R` and type the above into a new target. Note: although commands should usually be concise function calls, but this is not a restrict requirement, as you will see below.
+
+```{r, eval = FALSE}
+# Should go in _targets.R:
+library(targets)
+source("2-pipelines/functions.R")
+tar_option_set(packages = c("keras", "recipes", "rsample", "tidyverse", "yardstick"))
+list(
+  tar_target(churn_file, "data/churn.csv", format = "file"), 
+  tar_target(churn_data, split_data(churn_file)),
+  tar_target(churn_recipe,  prepare_recipe(churn_data)),
+  tar_target(run_relu, test_model(act1 = "relu", churn_data, churn_recipe)),
+  tar_target(run_sigmoid, test_model(act1 = "sigmoid", churn_data, churn_recipe)),
+  tar_target(run_softmax, test_model(act1 = "softmax", churn_data, churn_recipe)),
+  tar_target(
+    best_run,
+    "???" # Your turn: insert code to choose the model run with the highest accuracy.
+  )
+)
+```
+
+`best_run` should depend on `run_relu`, `run_sigmoid`, and `run_softmax`.
+
+```{r}
+tar_visnetwork()
+```
+
+The next `tar_make()` should run quickly and just build `best_run`.
+
+```{r}
+tar_make()
+```
+
+`best_run` should contain one row with the accuracy and hyperparameters of the best model.
+
+```{r}
+tar_read(best_run)
+```
+
+# Retrain the best model
+
+Finally, open `_targets.R` for editing and add a new target to retrain the best model with `retrain_run(best_run, churn_recipe)`. This time, we are returning a Keras model object, so we need to write `format = "keras"` in `tar_target()`.
+
+```{r, eval = FALSE}
+# Should go in _targets.R:
+library(targets)
+source("2-pipelines/functions.R")
+tar_option_set(packages = c("keras", "recipes", "rsample", "tidyverse", "yardstick"))
+list(
+  tar_target(churn_file, "data/churn.csv", format = "file"), 
+  tar_target(churn_data, split_data(churn_file)),
+  tar_target(churn_recipe,  prepare_recipe(churn_data)),
+  tar_target(run_relu, test_model(act1 = "relu", churn_data, churn_recipe)),
+  tar_target(run_sigmoid, test_model(act1 = "sigmoid", churn_data, churn_recipe)),
+  tar_target(run_softmax, test_model(act1 = "softmax", churn_data, churn_recipe)),
+  tar_target(
+    best_run,
+    bind_rows(run_relu, run_sigmoid, run_softmax) %>%
+      top_n(1, accuracy) %>%
+      head(1)
+  ),
+  tar_target(
+    best_model,
+    "???", # Your turn: call retrain_run() to retrain the best model.
+    format = "keras" # Needed to return the actual Keras model object.
+  )
+)
+```
+
+Check the dependency relationships.
+
+```{r}
+tar_visnetwork()
+```
+
+Train the model while skipping previous up-to-date targets.
+
+```{r}
+tar_make()
+```
+
+Inspect the model object.
+
+```{r}
+tar_read(best_model)
+```
+
+# Solution
+
+The full pipeline in `_targets.R` should look like this.
+
+
+```{r, eval = FALSE}
+# Should be in _targets.R:
+library(targets)
+source("2-pipelines/functions.R")
+tar_option_set(packages = c("keras", "recipes", "rsample", "tidyverse", "yardstick"))
+list(
+  tar_target(churn_file, "data/churn.csv", format = "file"), 
+  tar_target(churn_data, split_data(churn_file)),
+  tar_target(churn_recipe,  prepare_recipe(churn_data)),
+  tar_target(run_relu, test_model(act1 = "relu", churn_data, churn_recipe)),
+  tar_target(run_sigmoid, test_model(act1 = "sigmoid", churn_data, churn_recipe)),
+  tar_target(run_softmax, test_model(act1 = "softmax", churn_data, churn_recipe)),
+  tar_target(
+    best_run,
+    bind_rows(run_relu, run_sigmoid, run_softmax) %>%
+      top_n(1, accuracy) %>%
+      head(1)
+  ),
+  tar_target(
+    best_model,
+    retrain_run(best_run, churn_recipe),
+    format = "keras"
+  )
+)
+```
+
+# Recap
+
+Building up a pipeline is an gradual, iterative process:
+
+1. Add or change some targets in the pipeline.
+2. Check the pipeline with `tar_outdated()` and `tar_visnetwork()`.
+3. Call `tar_make()` to run the new targets.
+4. Check the output with `tar_load()` and/or `tar_read()`.
+5. Repeat.
+
+In the next notebook, we will explore what happens when we make changes to the code and data.
