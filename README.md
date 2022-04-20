@@ -8,5 +8,5 @@
 
 This repo contains the material for my talk *“Using the R Eco-System for
 Reproducible Research”* during DATAWorks 2022. Within this repo, you
-will find the slides I used as well as the files I used to demonstrate
-the `{renv}` package and the `{targets}` package.
+will find the slides I used to frame the problem as well as the files I
+used to demonstrate the `{renv}` package and the `{targets}` package.
