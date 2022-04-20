@@ -18,7 +18,7 @@ Target Markdown is a powerful R Markdown interface for reproducible analysis pip
 The example requires several R packages, and `targets` must be version 0.5.0.9000 or above. 
 
 ```{r, eval = FALSE}
-install.packages(c("dplyr", "ggplot2", "readr", "targets", "tidyr"))
+install.packages(c("dplyr", "ggplot2", "targets", "tidyr"))
 ```
 
 # Setup

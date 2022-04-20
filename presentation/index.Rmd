@@ -22,7 +22,7 @@ options(htmltools.dir.version = FALSE)
 
 library(tidyverse)
 library(xaringanthemer)
-#tar_read(report)
+targets::tar_read(data)
 ```
 
 --dim-gray: #626262ff;
@@ -41,7 +41,7 @@ library(xaringanthemer)
 
 
 ```{r xaringanExtra, echo=FALSE}
-xaringanExtra::use_xaringan_extra(c("tile_view", "animate_css", "tachyons", "logo", "use_fit_screen"))
+#xaringanExtra::use_xaringan_extra(c("tile_view", #"animate_css", "tachyons", "logo", "use_fit_screen"))
 ```
 
 name: title_slide

@@ -4,54 +4,25 @@ output: html_document
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
-source(here::here("R/model.R"))
-source(here::here("R/functions.R"))
 library(targets)
 library(tarchetypes)
 ```
 
-Target Markdown is a powerful R Markdown interface for reproducible analysis pipelines, and the chapter at https://books.ropensci.org/targets/markdown.html walks through it in detail. This R Markdown report the example from the chapter. Try it out in both interactive and non-interactive modes, either by running the code chunks in different ways or setting the `tar_interactive` chunk option.
-
-# Packages
-
-The example requires several R packages, and `targets` must be version 0.5.0.9000 or above. 
-
-```{r, eval = FALSE}
-install.packages(c("dplyr", "ggplot2", "readr", "targets", "tidyr"))
-```
-
-# Setup
-
-If you are using old versions of `targets` (<= 0.7.0) and/or `knitr` (<= 1.33), you will need to load the `targets` package in the R Markdown document in order for Target Markdown code chunks to work.
-
-
-
-# Globals
-
-We first define some global options/functions common to all targets. The function below plots a histogram of ozone concentrations, and our histogram target will need it.
-
-
-# Targets
-
-
-Set the `tar_simple` chunk option to `TRUE` to define a single target with the command in the code chunk. The chunk below only contains `biglm(Ozone ~ Wind + Temp, data)` in the source, but because `tar_simple` is `TRUE`, it is shorthand for `tar_target(name = fit, command = biglm(Ozone ~ Wind + Temp, data))`. All other arguments to `tar_target()` are set to their default values (configurable with `tar_option_set()`).
-
-
-
-
-# Output
-
-You can retrieve results from the `_targets/` data store using `tar_read()` or `tar_load()`.
+# Model Output
 
 ```{r, message = FALSE}
-tar_read(model_ft)
+model <- targets::tar_read(linear_model)
+summary(model)
 ```
-
-The `targets` dependency graph helps your readers understand the steps of your pipeline at a high level.
 
 ```{r}
-tar_visnetwork()
+targets::tar_read(data) %>% 
+  ggplot() + 
+    aes(x = horsepower, y = highwaympg, color = fueltype) + 
+    geom_point() + 
+    labs(title = "Scatterplot of Highway MPG and Horsepower",
+         x = "Horsepower",
+         y = "Highway MPG")
 ```
 
-At this point, you can go back and run `{targets}` chunks in interactive mode without interfering with the code or data of the non-interactive pipeline.
+

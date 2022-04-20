@@ -3,31 +3,12 @@
 options(tidyverse.quiet = TRUE)
 options(tidymodels.quiet = TRUE)
 library(tidyverse)
-library(tidymodels)
+library(rstatix)
 
-model_workflow <- function(df) {
+model <- function(df) {
 
-    xg_mod <-
-      boost_tree() %>% #functional form
-      set_engine("xgboost")
+    lm_model <- lm(price ~ horsepower + wheelbase + fueltype, data = df)
 
-    arete_rec <-
-        recipe(t1_cqpa ~ ., data = df) %>%
-        update_role(pn_id, new_role = "id") %>%
-        step_impute_bag(all_predictors()) %>%
-        step_normalize(all_numeric_predictors()) %>%
-        step_dummy(all_nominal_predictors(), one_hot = TRUE)
-
-    arete_wflow_xg <-
-        workflow() %>%
-        add_model(xg_mod) %>%
-        add_recipe(arete_rec)
-
-    return(arete_wflow_xg)
+    return(lm_model)
 }
 
-model_fit <- function(df, wflow) {
-  final_model <- fit(wflow, df)
-  model_fit <- extract_fit_parsnip(final_model) %>% pluck("fit")
-  return(model_fit)
-}
