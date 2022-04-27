@@ -22,7 +22,7 @@ options(htmltools.dir.version = FALSE)
 
 library(tidyverse)
 library(xaringanthemer)
-targets::tar_read(data)
+targets::tar_read(report)
 ```
 
 --dim-gray: #626262ff;
