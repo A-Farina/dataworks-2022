@@ -1,28 +1,46 @@
 ---
-title: "Target Markdown"
+title: "Linear Regression Results"
 output: html_document
 ---
 
 ```{r setup, include = FALSE}
 library(targets)
 library(tarchetypes)
+library(kableExtra)
 ```
 
-# Model Output
+### Model Output
 
-```{r, message = FALSE}
-model <- targets::tar_read(linear_model)
-summary(model)
+```{r, message = FALSE, echo = FALSE}
+model <- tar_read(linear_model)
+summary(model) %>% 
+  tidy() %>% 
+  kbl(caption = "Linear Regression using {lm}") %>%
+  kable_classic(full_width = F, html_font = "Cambria", position = "left")
 ```
 
-```{r}
-targets::tar_read(data) %>% 
-  ggplot() + 
-    aes(x = horsepower, y = highwaympg, color = fueltype) + 
-    geom_point() + 
-    labs(title = "Scatterplot of Highway MPG and Horsepower",
-         x = "Horsepower",
-         y = "Highway MPG")
+### Model Output using Tidymodels framework
+
+```{r, message = FALSE, echo = FALSE}
+model2 <- tar_read(tidy_model)
+tidy(model2$lm_fit) %>% 
+  kbl(caption = "Linear Regression using {tidymodels}") %>%
+  kable_classic(full_width = F, html_font = "Cambria", position = "left")
 ```
+
+### How well does our model predict the actual price?
+
+```{r, message = FALSE, echo = FALSE}
+predict(model2$lm_fit, new_data = model2$test) %>% 
+  bind_cols(model2$test) %>% 
+  ggplot(aes(x = .pred, y = price)) +
+  geom_point(color = '#006EA1') +
+  geom_abline(intercept = 0, slope = 1, color = 'orange') +
+  labs(title = 'Linear Regression Results - Car Price Test Set',
+       x = 'Predicted Price',
+       y = 'Actual Price')
+```
+
+
 
 

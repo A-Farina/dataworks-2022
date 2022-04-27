@@ -1,9 +1,11 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-clean_data|function|1a8c16d9484f3b82|||||||||||||||
-data|stem|7509c0a447366190|fba02ed78d36d71c|4ed1af5ad7fe1e4c|1588979285||t19102.0417434293s|71e9a53aa68a8f5b|1564|rds|local|vector|||0.009||
-linear_model|stem|e444f22cb8c8a149|9c13564c058ce8ce|1c1a7bc548381356|-1231766416||t19102.0417435506s|18323e3dc6fc71a0|9148|rds|local|vector|||0.006||
-model|function|666ab5c79a9b27cb|||||||||||||||
+clean_data|function|237706762d2565ce|||||||||||||||
+data|stem|98e4f6da39c15b2c|fba02ed78d36d71c|120b20922ad86ddf|1588979285||t19109.6338888816s|91fbc6264795b52d|1841|rds|local|vector|||0.049||
+linear_model|stem|a23a736e52bc0c57|9c13564c058ce8ce|0c6883e0d4a56f85|-1231766416||t19109.6338926922s|c02d3aefd2fe4ed7|10860|rds|local|vector|||0.002||
+model|function|bda0c7f93ac29715|||||||||||||||
+model2|function|1120a94e3f25f679|||||||||||||||
 raw_data|stem|af648c610a68ef9f|712b7cb95d968bc3|1111122039009656|-979620141||t19102.041743279s|5eccb956753eba15|1560|rds|local|vector|||0.002||
 raw_data_file|stem|751028ebbfa31493|b0797df31ccb7d14|ef46db3751d8e999|2110307107|data/car_price.csv|t19075.0702352528s|f50635372a4cc836|4451|file|local|vector|||0||
-report|stem|d8d5aac925e681a0|736708981ffb467d|dc1388c278ae2d8b|-237041703|R/markdown.html*R/markdown.rmd|t19102.0496082776s|3d2b9a1ceec50a42|852426|file|local|vector|||1.867||
-slides|stem|fead07cc05673d83|b2a2e63e14e4b7fb|1e294d58931323f6|546730179|presentation/index.html*presentation/index.rmd*presentation/index_files|t19102.0525901377s|8f91d6a962c2f44b|175288|file|local|vector|||0.919||
+report|stem|72840bcfddf50f8e|277427f70c5de5e0|653b22b2df75cc27|-237041703|R/markdown.html*R/markdown.rmd|t19109.6427695006s|1b070b36dfa9c838|856796|file|local|vector|||1.599||
+slides|stem|fead07cc05673d83|b2a2e63e14e4b7fb|6926754bedfe2029|546730179|presentation/index.html*presentation/index.rmd*presentation/index_files|t19109.6338925952s|bc1a383cca21b1b7|15423|file|local|vector|||0.32||
+tidy_model|stem|c40129833d33022f|faaed3d70b7fec02|c8fa7ee1fb5d6cfe|-297037418||t19109.6338946839s|bf7c457b6529f23c|14473|rds|local|vector|||0.168||
