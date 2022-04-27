@@ -1854,10 +1854,10 @@
     },
     "tarchetypes": {
       "Package": "tarchetypes",
-      "Version": "0.5.0",
+      "Version": "0.6.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "69e05d6f7e98f843b1a94266cfd2d2ed",
+      "Hash": "4d76a20b57bc46b0be7ef6ca3cb68e2f",
       "Requirements": [
         "digest",
         "dplyr",
@@ -1872,10 +1872,10 @@
     },
     "targets": {
       "Package": "targets",
-      "Version": "0.11.0",
+      "Version": "0.12.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "bcb5125b621b728d8dc23e39f2f07428",
+      "Hash": "197fd95f9f9c6ac7e0be2d0ffbdd932f",
       "Requirements": [
         "R6",
         "base64url",
@@ -2256,10 +2256,10 @@
     },
     "xaringan": {
       "Package": "xaringan",
-      "Version": "0.23",
+      "Version": "0.24",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "7e0872f2e8cd94bac8e9c2eb2e6a8e59",
+      "Hash": "714cfbdbc0775404c8df7894dfed0165",
       "Requirements": [
         "htmltools",
         "knitr",

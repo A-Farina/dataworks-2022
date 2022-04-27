@@ -41,6 +41,6 @@ predict(model2$lm_fit, new_data = model2$test) %>%
        y = 'Actual Price')
 ```
 
-
+Some sort of description to this report
 
 

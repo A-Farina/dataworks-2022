@@ -1,0 +1,11 @@
+name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
+clean_data|function|1a8c16d9484f3b82|||||||||||||||
+data|stem|7509c0a447366190|fba02ed78d36d71c|4ed1af5ad7fe1e4c|1588979285||t19109.7821243703s|71e9a53aa68a8f5b|1564|rds|local|vector|||0.01||
+linear_model|stem|0369f12db6373e40|9c13564c058ce8ce|0d8fcb076f70658b|-1231766416||t19109.7821245229s|2089cb68f0c197fc|10332|rds|local|vector|||0.004||
+model|function|bda0c7f93ac29715|||||||||||||||
+model2|function|1120a94e3f25f679|||||||||||||||
+raw_data|stem|af648c610a68ef9f|712b7cb95d968bc3|1111122039009656|-979620141||t19109.7794522376s|5eccb956753eba15|1560|rds|local|vector|||0.081||
+raw_data_file|stem|751028ebbfa31493|b0797df31ccb7d14|ef46db3751d8e999|2110307107|data/car_price.csv|t19075.0702352528s|f50635372a4cc836|4451|file|local|vector|||0.002||
+report|stem|0bbb1e24f81e95d1|277427f70c5de5e0|ebdef6194ce0a4f9|-237041703|R/markdown.html*R/markdown.rmd|t19109.7821425514s|3bcb2eee42729c2c|858156|file|local|vector|||1.394||
+slides|stem|6f9d6ebdd0ae547d|f4ab748166f050fd|5eff6ca06fe57f3e|546730179|presentation/index.html*presentation/index.rmd*presentation/index_files|t19109.7821485127s|9acc52c5add21b5a|175830|file|local|vector|||0.443||
+tidy_model|stem|b966ee6af7b04cfa|faaed3d70b7fec02|84840ef38aac8956|-297037418||t19109.7821271512s|b80b5fb1deea0819|14069|rds|local|vector|||0.219||
